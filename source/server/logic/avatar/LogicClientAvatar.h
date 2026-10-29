@@ -12,6 +12,9 @@ class ByteStream;
 
 class LogicClientAvatar {
 public:
+    static constexpr int kMaxExperienceLevel = 12; // exp_levels.csv currently ends at level 12.
+    static constexpr int kMaxTrophies = 1600; // max trophies
+
     static LogicClientAvatar create(); // the constructor's defaults
     static LogicClientAvatar decode(const std::vector<std::uint8_t> &encoded);
     static LogicClientAvatar view(library::Ptr avatar);

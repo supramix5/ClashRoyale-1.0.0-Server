@@ -35,6 +35,7 @@ public:
 
     // A server command for a saved account (the player is offline or in a battle).
     static void applyServerCommandOffline(GameServer &server, std::int64_t accountId, LogicCommand command);
+    static void unlockAndMaxAllSpellsOffline(GameServer &server, std::int64_t accountId);
 
 private:
     void sendRewardClaims();

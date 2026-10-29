@@ -11,6 +11,7 @@
 #include "game/utils/FileUtil.h"
 #include "game/utils/StringUtil.h"
 #include "game/utils/TimeUtil.h"
+#include "logic/avatar/LogicClientAvatar.h"
 #include "logic/command/home/LogicChallengeCommand.h"
 #include "logic/command/home/LogicKickAllianceMemberCommand.h"
 #include "logic/command/home/LogicRequestSpellsCommand.h"
@@ -103,6 +104,11 @@ constexpr int kRequestClosed = 1;
 constexpr int kRequestAlreadySent = 2;
 constexpr int kRequestScoreTooLow = 3;
 
+constexpr char kHelpMessage[] =
+    "Clash Royale (HLE) by Cartyrty\nCommands implementations by supramix5\nCommands list:\n\n"
+    "/help = Displays this message\n/max = Unlocks and levels up to the max all available cards";
+constexpr char kUnknownCommandMessage[] = "Unknown command\nTry typing /help for more info.";
+
 bool isValidReference(int globalId, int classId, int rowCount) {
     return GlobalID::getClassID(globalId) == classId && GlobalID::getInstanceID(globalId) < rowCount;
 }
@@ -122,6 +128,19 @@ bool isValidChatMessage(const std::string &message) {
     for (unsigned char c : message)
         if (c < 0x20 && c != '\n' && c != '\t') return false;
     return true;
+}
+
+void sendPrivateChatMessage(MessageManager &player, const AllianceMember &member, const std::string &text) {
+    ChatStreamEntry entry;
+    entry.setId(0);
+    entry.setCreationTime(TimeUtil::getMilliseconds());
+    entry.setSender(member.avatarId, member.name, member.role);
+    entry.setSenderExpLevel(player.getExpLevel());
+    entry.setMessage(text);
+
+    AllianceStreamEntryMessage response;
+    response.setStreamEntry(entry);
+    player.sendMessage(response);
 }
 } // namespace
 
@@ -497,9 +516,30 @@ void AllianceManager::onChatToAllianceStream(MessageManager &player, const ChatT
     auto *member = alliance ? alliance->getMember(player.getAccountId()) : nullptr;
     if (!member || !message.getMessage() || !isValidChatMessage(*message.getMessage()))
         return sendChangeFailed(player, kGenericFailure);
+    const auto &textMessage = *message.getMessage();
+    if (!textMessage.empty() && textMessage.front() == '/') {
+        if (textMessage == "/help") {
+            sendPrivateChatMessage(player, *member, kHelpMessage);
+        } else if (textMessage == "/max") {
+            if (auto *gameMode = player.getGameMode()) {
+                gameMode->getHome().unlockAndMaxAllSpells();
+                gameMode->getAvatar().setExpLevel(LogicClientAvatar::kMaxExperienceLevel);
+                gameMode->getAvatar().setScore(LogicClientAvatar::kMaxTrophies);
+            } else {
+                GameMode::unlockAndMaxAllSpellsOffline(server_, player.getAccountId());
+            }
+            Debugger::print("server", "%s unlocked and maxed all available cards; reconnecting",
+                            player.getAvatarName().c_str());
+            player.restartClientSession();
+        } else {
+            sendPrivateChatMessage(player, *member, kUnknownCommandMessage);
+        }
+        return;
+    }
+
     auto chat = std::make_unique<ChatStreamEntry>();
     chat->setSender(member->avatarId, member->name, member->role);
-    chat->setMessage(*message.getMessage());
+    chat->setMessage(textMessage);
     auto &entry = alliance->addStreamEntry(std::move(chat));
     save();
     broadcastStreamEntry(*alliance, entry);

@@ -12,6 +12,8 @@ int getInstanceID(library::Ptr data);
 std::string getName(library::Ptr data);
 int getIntegerValue(library::Ptr data, const std::string &column);
 std::string getValue(library::Ptr data, const std::string &column);
+bool isSpellNotInUse(library::Ptr spellData);
+int getSpellMaxLevelIndex(library::Ptr spellData);
 
 // Typed rows.
 library::Ptr getNpcLocation(library::Ptr npcData);

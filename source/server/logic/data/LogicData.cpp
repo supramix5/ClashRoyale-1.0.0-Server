@@ -28,6 +28,14 @@ std::string getValue(Ptr data, const std::string &column) {
     return library::readString(call("__ZNK9LogicData8getValueERK6String", {data, library::newString(column)}));
 }
 
+bool isSpellNotInUse(Ptr spellData) {
+    return spellData && (call("__ZNK14LogicSpellData10isNotInUseEv", {spellData}) & 0xff) != 0;
+}
+
+int getSpellMaxLevelIndex(Ptr spellData) {
+    return spellData ? int(call("__ZNK14LogicSpellData16getMaxLevelIndexEv", {spellData})) : 0;
+}
+
 Ptr getNpcLocation(Ptr npcData) { return call("__ZNK12LogicNpcData11getLocationEv", {npcData}); }
 Ptr getNpcPredefinedDeck(Ptr npcData) { return npcData ? library::readPointer(npcData + kNpcPredefinedDeckOffset) : 0; }
 Ptr getPredefinedDeckSpells(Ptr predefinedDeckData) {

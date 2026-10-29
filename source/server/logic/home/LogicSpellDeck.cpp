@@ -1,5 +1,6 @@
 #include "logic/home/LogicSpellDeck.h"
 
+#include "logic/home/LogicSpell.h"
 #include "titan/logic/json/LogicJSON.h"
 
 namespace server {
@@ -8,9 +9,6 @@ using library::Ptr;
 
 namespace {
 constexpr std::size_t kSpellDeckSize = 0x48;
-// LogicSpell (0x30 bytes): spell data +0, level index +8.
-constexpr std::size_t kSpellSize = 0x30;
-constexpr int kSpellLevelIndexOffset = 8;
 } // namespace
 
 namespace LogicSpellDeck {
@@ -24,10 +22,7 @@ Ptr clone(Ptr deck) { return call("__ZNK14LogicSpellDeck5cloneEv", {deck}); }
 void clear(Ptr deck) { call("__ZN14LogicSpellDeck5clearEv", {deck}); }
 
 void putSpell(Ptr deck, int slot, Ptr spellData, int levelIndex) {
-    const auto spell = library::allocate(kSpellSize);
-    call("__ZN10LogicSpellC1Ev", {spell});
-    call("__ZN10LogicSpell12setSpellDataEPK14LogicSpellData", {spell, spellData});
-    library::writeInt(spell + kSpellLevelIndexOffset, levelIndex);
+    const auto spell = LogicSpell::create(spellData, levelIndex);
     call("__ZN14LogicSpellDeck19putSpellInEmptySlotEiP10LogicSpell", {deck, std::uint64_t(std::uint32_t(slot)), spell});
 }
 

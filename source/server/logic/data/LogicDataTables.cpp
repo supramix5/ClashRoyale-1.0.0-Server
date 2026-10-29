@@ -37,6 +37,11 @@ Ptr getPredefinedDeckByName(const std::string &name) {
     return call("__ZN15LogicDataTables23getPredefinedDeckByNameERK6StringPK9LogicData", {library::newString(name), 0});
 }
 
+int getSpellCount() { return int(call("__ZN15LogicDataTables13getSpellCountEv")); }
+Ptr getSpellAt(int index) {
+    return call("__ZN15LogicDataTables10getSpellAtEi", {std::uint64_t(std::uint32_t(index))});
+}
+
 Ptr getGoldData() { return call("__ZN15LogicDataTables11getGoldDataEv"); }
 Ptr getFreeGoldData() { return call("__ZN15LogicDataTables15getFreeGoldDataEv"); }
 

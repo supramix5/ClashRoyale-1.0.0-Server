@@ -4,6 +4,8 @@
 
 namespace server {
 namespace LogicSpell {
+library::Ptr create(library::Ptr spellData, int levelIndex);
+void setLevelIndex(library::Ptr spell, int levelIndex);
 library::Ptr clone(library::Ptr spell);
 } // namespace LogicSpell
 } // namespace server

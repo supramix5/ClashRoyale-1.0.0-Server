@@ -45,6 +45,7 @@ public:
     GameMode *getGameMode() const { return gameMode_.get(); } // null outside the home
     void goHome();
     void leaveHome(); // ends the home simulation (a battle or a replay starts); the account keeps the saved state
+    void restartClientSession();
     void checkShop();
 
     // UDP battles. sendUdpConnectionInfo starts a session for a battle (UdpConnectionInfoMessage over TCP); the client

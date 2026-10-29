@@ -40,6 +40,7 @@ public:
     int getMaxChestCount() const;
     void addChest(library::Ptr chest); // the home owns the chest
     int getSpellCount(library::Ptr spellData) const;
+    void unlockAndMaxAllSpells();
 
     library::Ptr get() const { return home_; }
     library::Ptr release(); // for a LogicGameMode that takes the home

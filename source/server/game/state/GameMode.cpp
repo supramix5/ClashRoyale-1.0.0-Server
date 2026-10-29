@@ -6,6 +6,7 @@
 #include "game/alliance/AllianceManager.h"
 #include "game/network/MessageManager.h"
 #include "game/utils/TimeUtil.h"
+#include "logic/avatar/LogicClientAvatar.h"
 #include "logic/command/server/LogicClaimRewardCommand.h"
 #include "logic/command/server/LogicShopSeedChangedCommand.h"
 #include "logic/data/LogicData.h"
@@ -215,6 +216,20 @@ void GameMode::applyServerCommandOffline(GameServer &server, std::int64_t accoun
     command.release();
     account->home = mode.getHome().encode();
     account->avatar = mode.getPlayerAvatar().encode();
+    server.getAccountManager().saveAccount(*account);
+}
+
+void GameMode::unlockAndMaxAllSpellsOffline(GameServer &server, std::int64_t accountId) {
+    auto *account = server.getAccountManager().getAccount(accountId);
+    if (!account) return;
+    LogicGameMode mode(false);
+    mode.loadHomeState(LogicClientHome::decode(account->home), LogicClientAvatar::decode(account->avatar), 0, 0);
+    mode.getHome().unlockAndMaxAllSpells();
+    mode.getPlayerAvatar().setExpLevel(LogicClientAvatar::kMaxExperienceLevel);
+    mode.getPlayerAvatar().setScore(LogicClientAvatar::kMaxTrophies);
+    account->home = mode.getHome().encode();
+    account->avatar = mode.getPlayerAvatar().encode();
+    account->savedAt = TimeUtil::getSeconds();
     server.getAccountManager().saveAccount(*account);
 }
 } // namespace server

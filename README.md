@@ -25,7 +25,9 @@ The server listens on port 9339 (the game) and 9340 (content updates), for this 
 ## Features
 
 - New accounts (level 1, Arena 1, tutorial skipped), home, chests and the daily shop
-- Clans: chat, roles, card requests and donations, join requests, clan mail, search, friendly battles
+- Clans: chat, roles, card requests and donations, join requests, clan mail, search, friendly battles; `/help` lists
+  clan chat commands, and `/max` maxes every in-use card and the player's experience level before restarting the client
+  session
 - NPC and PvP battles simulated on the server, with desync correction and rejoining after a disconnect
 - PvP battles over UDP, as the original game does them (falling back to TCP when UDP cannot get through)
 - Battle results, emotes, battle log and replays

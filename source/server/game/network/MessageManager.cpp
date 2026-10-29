@@ -363,6 +363,11 @@ void MessageManager::leaveHome() {
     gameMode_.reset();
 }
 
+void MessageManager::restartClientSession() {
+    if (gameMode_) gameMode_->save();
+    connection_.close();
+}
+
 void MessageManager::checkShop() {
     if (gameMode_) gameMode_->checkShop();
 }

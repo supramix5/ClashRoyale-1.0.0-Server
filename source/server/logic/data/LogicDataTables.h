@@ -18,6 +18,8 @@ int getIntGlobal(const char *name); // globals.csv NumberValue, 0 when absent
 library::Ptr getArenaByName(const std::string &name);
 library::Ptr getLocationByName(const std::string &name);
 library::Ptr getPredefinedDeckByName(const std::string &name);
+int getSpellCount();
+library::Ptr getSpellAt(int index);
 library::Ptr getGoldData();
 library::Ptr getFreeGoldData();
 void initTilemap(library::Ptr csvNode, int locationInstanceId);
